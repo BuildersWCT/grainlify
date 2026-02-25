@@ -61,55 +61,67 @@ export class ValidationError extends SDKError {
  */
 export enum ContractErrorCode {
   // ── Program-Escrow (original) ──────────────────────────────────────────
-  NOT_INITIALIZED          = 'NOT_INITIALIZED',
-  UNAUTHORIZED             = 'UNAUTHORIZED',
-  INSUFFICIENT_BALANCE     = 'INSUFFICIENT_BALANCE',
-  INVALID_AMOUNT           = 'INVALID_AMOUNT',
-  ALREADY_INITIALIZED      = 'ALREADY_INITIALIZED',
-  EMPTY_BATCH              = 'EMPTY_BATCH',
-  LENGTH_MISMATCH          = 'LENGTH_MISMATCH',
-  OVERFLOW                 = 'OVERFLOW',
-  AMOUNT_BELOW_MIN         = 'AMOUNT_BELOW_MIN',
-  AMOUNT_ABOVE_MAX         = 'AMOUNT_ABOVE_MAX',
+  NOT_INITIALIZED = 'NOT_INITIALIZED',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
+  INVALID_AMOUNT = 'INVALID_AMOUNT',
+  INVALID_BATCH_SIZE = 'INVALID_BATCH_SIZE',
+  ALREADY_INITIALIZED = 'ALREADY_INITIALIZED',
+  EMPTY_BATCH = 'EMPTY_BATCH',
+  LENGTH_MISMATCH = 'LENGTH_MISMATCH',
+  OVERFLOW = 'OVERFLOW',
+  AMOUNT_BELOW_MIN = 'AMOUNT_BELOW_MIN',
+  AMOUNT_ABOVE_MAX = 'AMOUNT_ABOVE_MAX',
+
+  // ── Program-Escrow (contracts/program-escrow) ──────────────────────────
+  PROG_PROGRAM_ALREADY_EXISTS = 'PROG_PROGRAM_ALREADY_EXISTS',
+  PROG_DUPLICATE_PROGRAM_ID = 'PROG_DUPLICATE_PROGRAM_ID',
+  PROG_PROGRAM_NOT_FOUND = 'PROG_PROGRAM_NOT_FOUND',
+  PROG_FUNDS_PAUSED = 'PROG_FUNDS_PAUSED',
+  PROG_ALREADY_RELEASED = 'PROG_ALREADY_RELEASED',
+  PROG_NOT_YET_DUE = 'PROG_NOT_YET_DUE',
+  PROG_SCHEDULE_NOT_FOUND = 'PROG_SCHEDULE_NOT_FOUND',
 
   // ── Bounty-Escrow (contracts/bounty_escrow) ────────────────────────────
   BOUNTY_ALREADY_INITIALIZED = 'BOUNTY_ALREADY_INITIALIZED',   // 1
-  BOUNTY_NOT_INITIALIZED     = 'BOUNTY_NOT_INITIALIZED',       // 2
-  BOUNTY_EXISTS              = 'BOUNTY_EXISTS',                 // 3
-  BOUNTY_NOT_FOUND           = 'BOUNTY_NOT_FOUND',             // 4
-  BOUNTY_FUNDS_NOT_LOCKED    = 'BOUNTY_FUNDS_NOT_LOCKED',      // 5
+  BOUNTY_NOT_INITIALIZED = 'BOUNTY_NOT_INITIALIZED',       // 2
+  BOUNTY_EXISTS = 'BOUNTY_EXISTS',                 // 3
+  BOUNTY_NOT_FOUND = 'BOUNTY_NOT_FOUND',             // 4
+  BOUNTY_FUNDS_NOT_LOCKED = 'BOUNTY_FUNDS_NOT_LOCKED',      // 5
   BOUNTY_DEADLINE_NOT_PASSED = 'BOUNTY_DEADLINE_NOT_PASSED',   // 6
-  BOUNTY_UNAUTHORIZED        = 'BOUNTY_UNAUTHORIZED',          // 7
-  BOUNTY_INVALID_FEE_RATE    = 'BOUNTY_INVALID_FEE_RATE',     // 8
+  BOUNTY_UNAUTHORIZED = 'BOUNTY_UNAUTHORIZED',          // 7
+  BOUNTY_INVALID_FEE_RATE = 'BOUNTY_INVALID_FEE_RATE',     // 8
   BOUNTY_FEE_RECIPIENT_NOT_SET = 'BOUNTY_FEE_RECIPIENT_NOT_SET', // 9
-  BOUNTY_INVALID_BATCH_SIZE  = 'BOUNTY_INVALID_BATCH_SIZE',   // 10
+  BOUNTY_INVALID_BATCH_SIZE = 'BOUNTY_INVALID_BATCH_SIZE',   // 10
   BOUNTY_BATCH_SIZE_MISMATCH = 'BOUNTY_BATCH_SIZE_MISMATCH',  // 11
-  BOUNTY_DUPLICATE_ID        = 'BOUNTY_DUPLICATE_ID',          // 12
-  BOUNTY_INVALID_AMOUNT      = 'BOUNTY_INVALID_AMOUNT',        // 13
-  BOUNTY_INVALID_DEADLINE    = 'BOUNTY_INVALID_DEADLINE',      // 14
-  BOUNTY_INSUFFICIENT_FUNDS  = 'BOUNTY_INSUFFICIENT_FUNDS',    // 16
+  BOUNTY_DUPLICATE_ID = 'BOUNTY_DUPLICATE_ID',          // 12
+  BOUNTY_INVALID_AMOUNT = 'BOUNTY_INVALID_AMOUNT',        // 13
+  BOUNTY_INVALID_DEADLINE = 'BOUNTY_INVALID_DEADLINE',      // 14
+  BOUNTY_INSUFFICIENT_FUNDS = 'BOUNTY_INSUFFICIENT_FUNDS',    // 16
   BOUNTY_REFUND_NOT_APPROVED = 'BOUNTY_REFUND_NOT_APPROVED',   // 17
-  BOUNTY_FUNDS_PAUSED        = 'BOUNTY_FUNDS_PAUSED',          // 18
+  BOUNTY_FUNDS_PAUSED = 'BOUNTY_FUNDS_PAUSED',          // 18
+  BOUNTY_NOT_PAUSED = 'BOUNTY_NOT_PAUSED',
+  BOUNTY_CLAIM_PENDING = 'BOUNTY_CLAIM_PENDING',
 
   // ── Governance (contracts/grainlify-core/governance) ───────────────────
-  GOV_NOT_INITIALIZED        = 'GOV_NOT_INITIALIZED',          // 1
-  GOV_INVALID_THRESHOLD      = 'GOV_INVALID_THRESHOLD',        // 2
-  GOV_THRESHOLD_TOO_LOW      = 'GOV_THRESHOLD_TOO_LOW',        // 3
-  GOV_INSUFFICIENT_STAKE     = 'GOV_INSUFFICIENT_STAKE',       // 4
-  GOV_PROPOSALS_NOT_FOUND    = 'GOV_PROPOSALS_NOT_FOUND',      // 5
-  GOV_PROPOSAL_NOT_FOUND     = 'GOV_PROPOSAL_NOT_FOUND',       // 6
-  GOV_PROPOSAL_NOT_ACTIVE    = 'GOV_PROPOSAL_NOT_ACTIVE',      // 7
-  GOV_VOTING_NOT_STARTED     = 'GOV_VOTING_NOT_STARTED',       // 8
-  GOV_VOTING_ENDED           = 'GOV_VOTING_ENDED',             // 9
-  GOV_VOTING_STILL_ACTIVE    = 'GOV_VOTING_STILL_ACTIVE',      // 10
-  GOV_ALREADY_VOTED          = 'GOV_ALREADY_VOTED',            // 11
-  GOV_PROPOSAL_NOT_APPROVED  = 'GOV_PROPOSAL_NOT_APPROVED',    // 12
+  GOV_NOT_INITIALIZED = 'GOV_NOT_INITIALIZED',          // 1
+  GOV_INVALID_THRESHOLD = 'GOV_INVALID_THRESHOLD',        // 2
+  GOV_THRESHOLD_TOO_LOW = 'GOV_THRESHOLD_TOO_LOW',        // 3
+  GOV_INSUFFICIENT_STAKE = 'GOV_INSUFFICIENT_STAKE',       // 4
+  GOV_PROPOSALS_NOT_FOUND = 'GOV_PROPOSALS_NOT_FOUND',      // 5
+  GOV_PROPOSAL_NOT_FOUND = 'GOV_PROPOSAL_NOT_FOUND',       // 6
+  GOV_PROPOSAL_NOT_ACTIVE = 'GOV_PROPOSAL_NOT_ACTIVE',      // 7
+  GOV_VOTING_NOT_STARTED = 'GOV_VOTING_NOT_STARTED',       // 8
+  GOV_VOTING_ENDED = 'GOV_VOTING_ENDED',             // 9
+  GOV_VOTING_STILL_ACTIVE = 'GOV_VOTING_STILL_ACTIVE',      // 10
+  GOV_ALREADY_VOTED = 'GOV_ALREADY_VOTED',            // 11
+  GOV_PROPOSAL_NOT_APPROVED = 'GOV_PROPOSAL_NOT_APPROVED',    // 12
   GOV_EXECUTION_DELAY_NOT_MET = 'GOV_EXECUTION_DELAY_NOT_MET', // 13
-  GOV_PROPOSAL_EXPIRED       = 'GOV_PROPOSAL_EXPIRED',         // 14
+  GOV_PROPOSAL_EXPIRED = 'GOV_PROPOSAL_EXPIRED',         // 14
 
   // ── Circuit-Breaker / Error-Recovery ────────────────────────────────────
-  CIRCUIT_OPEN               = 'CIRCUIT_OPEN',                 // 1001
-  CIRCUIT_TRANSFER_FAILED    = 'CIRCUIT_TRANSFER_FAILED',      // 1002
+  CIRCUIT_OPEN = 'CIRCUIT_OPEN',                 // 1001
+  CIRCUIT_TRANSFER_FAILED = 'CIRCUIT_TRANSFER_FAILED',      // 1002
   CIRCUIT_INSUFFICIENT_BALANCE = 'CIRCUIT_INSUFFICIENT_BALANCE', // 1003
 }
 
@@ -119,55 +131,67 @@ export enum ContractErrorCode {
 
 const CONTRACT_ERROR_MESSAGES: Record<ContractErrorCode, string> = {
   // Program-Escrow
-  [ContractErrorCode.NOT_INITIALIZED]:           'Program not initialized',
-  [ContractErrorCode.UNAUTHORIZED]:              'Unauthorized: caller does not have permission',
-  [ContractErrorCode.INSUFFICIENT_BALANCE]:      'Insufficient balance for this operation',
-  [ContractErrorCode.INVALID_AMOUNT]:            'Amount must be greater than zero',
-  [ContractErrorCode.ALREADY_INITIALIZED]:       'Program already initialized',
-  [ContractErrorCode.EMPTY_BATCH]:               'Cannot process empty batch',
-  [ContractErrorCode.LENGTH_MISMATCH]:           'Recipients and amounts vectors must have the same length',
-  [ContractErrorCode.OVERFLOW]:                  'Payout amount overflow',
-  [ContractErrorCode.AMOUNT_BELOW_MIN]:          'Amount is below the minimum allowed by policy',
-  [ContractErrorCode.AMOUNT_ABOVE_MAX]:          'Amount exceeds the maximum allowed by policy',
+  [ContractErrorCode.NOT_INITIALIZED]: 'Program not initialized',
+  [ContractErrorCode.UNAUTHORIZED]: 'Unauthorized: caller does not have permission',
+  [ContractErrorCode.INSUFFICIENT_BALANCE]: 'Insufficient balance for this operation',
+  [ContractErrorCode.INVALID_AMOUNT]: 'Amount must be greater than zero',
+  [ContractErrorCode.INVALID_BATCH_SIZE]: 'Batch size is invalid',
+  [ContractErrorCode.ALREADY_INITIALIZED]: 'Program already initialized',
+  [ContractErrorCode.EMPTY_BATCH]: 'Cannot process empty batch',
+  [ContractErrorCode.LENGTH_MISMATCH]: 'Recipients and amounts vectors must have the same length',
+  [ContractErrorCode.OVERFLOW]: 'Payout amount overflow',
+  [ContractErrorCode.AMOUNT_BELOW_MIN]: 'Amount is below the minimum allowed by policy',
+  [ContractErrorCode.AMOUNT_ABOVE_MAX]: 'Amount exceeds the maximum allowed by policy',
+
+  // Program-Escrow (contract)
+  [ContractErrorCode.PROG_PROGRAM_ALREADY_EXISTS]: 'Program already exists',
+  [ContractErrorCode.PROG_DUPLICATE_PROGRAM_ID]: 'Duplicate program ID found in batch',
+  [ContractErrorCode.PROG_PROGRAM_NOT_FOUND]: 'Program not found',
+  [ContractErrorCode.PROG_FUNDS_PAUSED]: 'Program fund operations are currently paused',
+  [ContractErrorCode.PROG_ALREADY_RELEASED]: 'Funds already released',
+  [ContractErrorCode.PROG_NOT_YET_DUE]: 'Funds are not yet due',
+  [ContractErrorCode.PROG_SCHEDULE_NOT_FOUND]: 'Schedule not found',
 
   // Bounty-Escrow
   [ContractErrorCode.BOUNTY_ALREADY_INITIALIZED]: 'Bounty escrow contract is already initialized',
-  [ContractErrorCode.BOUNTY_NOT_INITIALIZED]:     'Bounty escrow contract has not been initialized',
-  [ContractErrorCode.BOUNTY_EXISTS]:              'A bounty with this ID already exists',
-  [ContractErrorCode.BOUNTY_NOT_FOUND]:           'Bounty not found',
-  [ContractErrorCode.BOUNTY_FUNDS_NOT_LOCKED]:    'Bounty funds have not been locked yet',
+  [ContractErrorCode.BOUNTY_NOT_INITIALIZED]: 'Bounty escrow contract has not been initialized',
+  [ContractErrorCode.BOUNTY_EXISTS]: 'A bounty with this ID already exists',
+  [ContractErrorCode.BOUNTY_NOT_FOUND]: 'Bounty not found',
+  [ContractErrorCode.BOUNTY_FUNDS_NOT_LOCKED]: 'Bounty funds have not been locked yet',
   [ContractErrorCode.BOUNTY_DEADLINE_NOT_PASSED]: 'Bounty deadline has not passed yet',
-  [ContractErrorCode.BOUNTY_UNAUTHORIZED]:        'Unauthorized: caller is not allowed to perform this bounty operation',
-  [ContractErrorCode.BOUNTY_INVALID_FEE_RATE]:   'Fee rate is invalid (must be between 0 and 5000 basis points)',
+  [ContractErrorCode.BOUNTY_UNAUTHORIZED]: 'Unauthorized: caller is not allowed to perform this bounty operation',
+  [ContractErrorCode.BOUNTY_INVALID_FEE_RATE]: 'Fee rate is invalid (must be between 0 and 5000 basis points)',
   [ContractErrorCode.BOUNTY_FEE_RECIPIENT_NOT_SET]: 'Fee recipient address has not been configured',
   [ContractErrorCode.BOUNTY_INVALID_BATCH_SIZE]: 'Batch size is invalid (must be between 1 and 20)',
   [ContractErrorCode.BOUNTY_BATCH_SIZE_MISMATCH]: 'Number of bounty IDs does not match the number of recipients',
-  [ContractErrorCode.BOUNTY_DUPLICATE_ID]:        'Duplicate bounty ID found in batch',
-  [ContractErrorCode.BOUNTY_INVALID_AMOUNT]:      'Bounty amount is invalid (zero, negative, or exceeds available)',
-  [ContractErrorCode.BOUNTY_INVALID_DEADLINE]:    'Bounty deadline is invalid (in the past or too far in the future)',
-  [ContractErrorCode.BOUNTY_INSUFFICIENT_FUNDS]:  'Insufficient funds in the escrow for this operation',
+  [ContractErrorCode.BOUNTY_DUPLICATE_ID]: 'Duplicate bounty ID found in batch',
+  [ContractErrorCode.BOUNTY_INVALID_AMOUNT]: 'Bounty amount is invalid (zero, negative, or exceeds available)',
+  [ContractErrorCode.BOUNTY_INVALID_DEADLINE]: 'Bounty deadline is invalid (in the past or too far in the future)',
+  [ContractErrorCode.BOUNTY_INSUFFICIENT_FUNDS]: 'Insufficient funds in the escrow for this operation',
   [ContractErrorCode.BOUNTY_REFUND_NOT_APPROVED]: 'Refund has not been approved by an admin',
-  [ContractErrorCode.BOUNTY_FUNDS_PAUSED]:        'Bounty fund operations are currently paused',
+  [ContractErrorCode.BOUNTY_FUNDS_PAUSED]: 'Bounty fund operations are currently paused',
+  [ContractErrorCode.BOUNTY_NOT_PAUSED]: 'Bounty operation is not paused',
+  [ContractErrorCode.BOUNTY_CLAIM_PENDING]: 'Refund blocked by a pending claim',
 
   // Governance
-  [ContractErrorCode.GOV_NOT_INITIALIZED]:        'Governance contract has not been initialized',
-  [ContractErrorCode.GOV_INVALID_THRESHOLD]:      'Governance threshold value is invalid',
-  [ContractErrorCode.GOV_THRESHOLD_TOO_LOW]:      'Governance threshold is too low',
-  [ContractErrorCode.GOV_INSUFFICIENT_STAKE]:     'Insufficient stake to perform this governance action',
-  [ContractErrorCode.GOV_PROPOSALS_NOT_FOUND]:    'No proposals found',
-  [ContractErrorCode.GOV_PROPOSAL_NOT_FOUND]:     'Proposal not found',
-  [ContractErrorCode.GOV_PROPOSAL_NOT_ACTIVE]:    'Proposal is not currently active',
-  [ContractErrorCode.GOV_VOTING_NOT_STARTED]:     'Voting has not started yet for this proposal',
-  [ContractErrorCode.GOV_VOTING_ENDED]:           'Voting period has ended for this proposal',
-  [ContractErrorCode.GOV_VOTING_STILL_ACTIVE]:    'Voting is still active; cannot execute proposal yet',
-  [ContractErrorCode.GOV_ALREADY_VOTED]:          'You have already voted on this proposal',
-  [ContractErrorCode.GOV_PROPOSAL_NOT_APPROVED]:  'Proposal has not been approved',
+  [ContractErrorCode.GOV_NOT_INITIALIZED]: 'Governance contract has not been initialized',
+  [ContractErrorCode.GOV_INVALID_THRESHOLD]: 'Governance threshold value is invalid',
+  [ContractErrorCode.GOV_THRESHOLD_TOO_LOW]: 'Governance threshold is too low',
+  [ContractErrorCode.GOV_INSUFFICIENT_STAKE]: 'Insufficient stake to perform this governance action',
+  [ContractErrorCode.GOV_PROPOSALS_NOT_FOUND]: 'No proposals found',
+  [ContractErrorCode.GOV_PROPOSAL_NOT_FOUND]: 'Proposal not found',
+  [ContractErrorCode.GOV_PROPOSAL_NOT_ACTIVE]: 'Proposal is not currently active',
+  [ContractErrorCode.GOV_VOTING_NOT_STARTED]: 'Voting has not started yet for this proposal',
+  [ContractErrorCode.GOV_VOTING_ENDED]: 'Voting period has ended for this proposal',
+  [ContractErrorCode.GOV_VOTING_STILL_ACTIVE]: 'Voting is still active; cannot execute proposal yet',
+  [ContractErrorCode.GOV_ALREADY_VOTED]: 'You have already voted on this proposal',
+  [ContractErrorCode.GOV_PROPOSAL_NOT_APPROVED]: 'Proposal has not been approved',
   [ContractErrorCode.GOV_EXECUTION_DELAY_NOT_MET]: 'Execution delay period has not elapsed yet',
-  [ContractErrorCode.GOV_PROPOSAL_EXPIRED]:       'Proposal has expired',
+  [ContractErrorCode.GOV_PROPOSAL_EXPIRED]: 'Proposal has expired',
 
   // Circuit-Breaker
-  [ContractErrorCode.CIRCUIT_OPEN]:               'Circuit breaker is open; operation rejected without attempting',
-  [ContractErrorCode.CIRCUIT_TRANSFER_FAILED]:    'Token transfer failed (transient error)',
+  [ContractErrorCode.CIRCUIT_OPEN]: 'Circuit breaker is open; operation rejected without attempting',
+  [ContractErrorCode.CIRCUIT_TRANSFER_FAILED]: 'Token transfer failed (transient error)',
   [ContractErrorCode.CIRCUIT_INSUFFICIENT_BALANCE]: 'Insufficient contract balance for transfer',
 };
 
@@ -177,50 +201,64 @@ const CONTRACT_ERROR_MESSAGES: Record<ContractErrorCode, string> = {
 
 /** Bounty-escrow #[contracterror] discriminants → SDK code */
 export const BOUNTY_ESCROW_ERROR_MAP: Record<number, ContractErrorCode> = {
-  1:  ContractErrorCode.BOUNTY_ALREADY_INITIALIZED,
-  2:  ContractErrorCode.BOUNTY_NOT_INITIALIZED,
-  3:  ContractErrorCode.BOUNTY_EXISTS,
-  4:  ContractErrorCode.BOUNTY_NOT_FOUND,
-  5:  ContractErrorCode.BOUNTY_FUNDS_NOT_LOCKED,
-  6:  ContractErrorCode.BOUNTY_DEADLINE_NOT_PASSED,
-  7:  ContractErrorCode.BOUNTY_UNAUTHORIZED,
-  8:  ContractErrorCode.BOUNTY_INVALID_FEE_RATE,
-  9:  ContractErrorCode.BOUNTY_FEE_RECIPIENT_NOT_SET,
-  10: ContractErrorCode.BOUNTY_INVALID_BATCH_SIZE,
-  11: ContractErrorCode.BOUNTY_BATCH_SIZE_MISMATCH,
-  12: ContractErrorCode.BOUNTY_DUPLICATE_ID,
-  13: ContractErrorCode.BOUNTY_INVALID_AMOUNT,
-  14: ContractErrorCode.BOUNTY_INVALID_DEADLINE,
-  16: ContractErrorCode.BOUNTY_INSUFFICIENT_FUNDS,
-  17: ContractErrorCode.BOUNTY_REFUND_NOT_APPROVED,
-  18: ContractErrorCode.BOUNTY_FUNDS_PAUSED,
-  19: ContractErrorCode.AMOUNT_BELOW_MIN,
-  20: ContractErrorCode.AMOUNT_ABOVE_MAX,
+  1: ContractErrorCode.BOUNTY_ALREADY_INITIALIZED,
+  2: ContractErrorCode.BOUNTY_NOT_INITIALIZED,
+  200: ContractErrorCode.BOUNTY_EXISTS,
+  201: ContractErrorCode.BOUNTY_NOT_FOUND,
+  202: ContractErrorCode.BOUNTY_FUNDS_NOT_LOCKED,
+  12: ContractErrorCode.BOUNTY_DEADLINE_NOT_PASSED,
+  3: ContractErrorCode.BOUNTY_UNAUTHORIZED,
+  203: ContractErrorCode.BOUNTY_INVALID_FEE_RATE,
+  204: ContractErrorCode.BOUNTY_FEE_RECIPIENT_NOT_SET,
+  7: ContractErrorCode.BOUNTY_INVALID_BATCH_SIZE,
+  8: ContractErrorCode.BOUNTY_BATCH_SIZE_MISMATCH,
+  205: ContractErrorCode.BOUNTY_DUPLICATE_ID,
+  4: ContractErrorCode.BOUNTY_INVALID_AMOUNT,
+  11: ContractErrorCode.BOUNTY_INVALID_DEADLINE,
+  5: ContractErrorCode.BOUNTY_INSUFFICIENT_FUNDS,
+  206: ContractErrorCode.BOUNTY_REFUND_NOT_APPROVED,
+  207: ContractErrorCode.BOUNTY_FUNDS_PAUSED,
+  208: ContractErrorCode.AMOUNT_BELOW_MIN,
+  209: ContractErrorCode.AMOUNT_ABOVE_MAX,
+  210: ContractErrorCode.BOUNTY_NOT_PAUSED,
+  211: ContractErrorCode.BOUNTY_CLAIM_PENDING,
 };
 
 /** Governance #[contracterror] discriminants → SDK code */
 export const GOVERNANCE_ERROR_MAP: Record<number, ContractErrorCode> = {
-  1:  ContractErrorCode.GOV_NOT_INITIALIZED,
-  2:  ContractErrorCode.GOV_INVALID_THRESHOLD,
-  3:  ContractErrorCode.GOV_THRESHOLD_TOO_LOW,
-  4:  ContractErrorCode.GOV_INSUFFICIENT_STAKE,
-  5:  ContractErrorCode.GOV_PROPOSALS_NOT_FOUND,
-  6:  ContractErrorCode.GOV_PROPOSAL_NOT_FOUND,
-  7:  ContractErrorCode.GOV_PROPOSAL_NOT_ACTIVE,
-  8:  ContractErrorCode.GOV_VOTING_NOT_STARTED,
-  9:  ContractErrorCode.GOV_VOTING_ENDED,
-  10: ContractErrorCode.GOV_VOTING_STILL_ACTIVE,
-  11: ContractErrorCode.GOV_ALREADY_VOTED,
-  12: ContractErrorCode.GOV_PROPOSAL_NOT_APPROVED,
-  13: ContractErrorCode.GOV_EXECUTION_DELAY_NOT_MET,
-  14: ContractErrorCode.GOV_PROPOSAL_EXPIRED,
+  2: ContractErrorCode.GOV_NOT_INITIALIZED,
+  100: ContractErrorCode.GOV_INVALID_THRESHOLD,
+  101: ContractErrorCode.GOV_THRESHOLD_TOO_LOW,
+  102: ContractErrorCode.GOV_INSUFFICIENT_STAKE,
+  103: ContractErrorCode.GOV_PROPOSALS_NOT_FOUND,
+  104: ContractErrorCode.GOV_PROPOSAL_NOT_FOUND,
+  105: ContractErrorCode.GOV_PROPOSAL_NOT_ACTIVE,
+  106: ContractErrorCode.GOV_VOTING_NOT_STARTED,
+  107: ContractErrorCode.GOV_VOTING_ENDED,
+  108: ContractErrorCode.GOV_VOTING_STILL_ACTIVE,
+  109: ContractErrorCode.GOV_ALREADY_VOTED,
+  110: ContractErrorCode.GOV_PROPOSAL_NOT_APPROVED,
+  111: ContractErrorCode.GOV_EXECUTION_DELAY_NOT_MET,
+  112: ContractErrorCode.GOV_PROPOSAL_EXPIRED,
 };
 
 /** Circuit-breaker u32 error constants → SDK code */
 export const CIRCUIT_BREAKER_ERROR_MAP: Record<number, ContractErrorCode> = {
-  1001: ContractErrorCode.CIRCUIT_OPEN,
-  1002: ContractErrorCode.CIRCUIT_TRANSFER_FAILED,
-  1003: ContractErrorCode.CIRCUIT_INSUFFICIENT_BALANCE,
+  400: ContractErrorCode.CIRCUIT_OPEN,
+  401: ContractErrorCode.CIRCUIT_TRANSFER_FAILED,
+  402: ContractErrorCode.CIRCUIT_INSUFFICIENT_BALANCE,
+};
+
+/** Program-escrow #[contracterror] discriminants → SDK code */
+export const PROGRAM_ESCROW_ERROR_MAP: Record<number, ContractErrorCode> = {
+  7: ContractErrorCode.INVALID_BATCH_SIZE,
+  300: ContractErrorCode.PROG_PROGRAM_ALREADY_EXISTS,
+  301: ContractErrorCode.PROG_DUPLICATE_PROGRAM_ID,
+  302: ContractErrorCode.PROG_PROGRAM_NOT_FOUND,
+  303: ContractErrorCode.PROG_FUNDS_PAUSED,
+  304: ContractErrorCode.PROG_ALREADY_RELEASED,
+  305: ContractErrorCode.PROG_NOT_YET_DUE,
+  306: ContractErrorCode.PROG_SCHEDULE_NOT_FOUND,
 };
 
 // ---------------------------------------------------------------------------
@@ -245,12 +283,13 @@ export function createContractError(errorCode: ContractErrorCode, details?: stri
  */
 export function parseContractErrorByCode(
   numericCode: number,
-  contract: 'bounty_escrow' | 'governance' | 'circuit_breaker',
+  contract: 'bounty_escrow' | 'governance' | 'circuit_breaker' | 'program_escrow',
 ): ContractError {
   const maps: Record<string, Record<number, ContractErrorCode>> = {
-    bounty_escrow:   BOUNTY_ESCROW_ERROR_MAP,
-    governance:      GOVERNANCE_ERROR_MAP,
+    bounty_escrow: BOUNTY_ESCROW_ERROR_MAP,
+    governance: GOVERNANCE_ERROR_MAP,
     circuit_breaker: CIRCUIT_BREAKER_ERROR_MAP,
+    program_escrow: PROGRAM_ESCROW_ERROR_MAP,
   };
 
   const errorCode = maps[contract]?.[numericCode];
@@ -352,42 +391,96 @@ export function parseContractError(error: any): ContractError {
   if (errorMessage.includes('FundsPaused') || errorMessage.includes('funds are currently paused')) {
     return createContractError(ContractErrorCode.BOUNTY_FUNDS_PAUSED);
   }
+  if (errorMessage.includes('BountyNotPaused') || errorMessage.includes('NotPaused')) {
+    return createContractError(ContractErrorCode.BOUNTY_NOT_PAUSED);
+  }
+  if (errorMessage.includes('BountyClaimPending') || errorMessage.includes('ClaimPending')) {
+    return createContractError(ContractErrorCode.BOUNTY_CLAIM_PENDING);
+  }
 
   // ── Governance patterns ────────────────────────────────────────────────
-  if (errorMessage.includes('ProposalNotFound') || errorMessage.includes('Proposal not found')) {
+  if (
+    errorMessage.includes('GovProposalNotFound') ||
+    errorMessage.includes('ProposalNotFound') ||
+    errorMessage.includes('Proposal not found')
+  ) {
     return createContractError(ContractErrorCode.GOV_PROPOSAL_NOT_FOUND);
   }
-  if (errorMessage.includes('ProposalNotActive') || errorMessage.includes('not currently active')) {
+  if (
+    errorMessage.includes('GovProposalNotActive') ||
+    errorMessage.includes('ProposalNotActive') ||
+    errorMessage.includes('not currently active')
+  ) {
     return createContractError(ContractErrorCode.GOV_PROPOSAL_NOT_ACTIVE);
   }
-  if (errorMessage.includes('VotingNotStarted') || errorMessage.includes('Voting has not started')) {
+  if (
+    errorMessage.includes('GovVotingNotStarted') ||
+    errorMessage.includes('VotingNotStarted') ||
+    errorMessage.includes('Voting has not started')
+  ) {
     return createContractError(ContractErrorCode.GOV_VOTING_NOT_STARTED);
   }
-  if (errorMessage.includes('VotingEnded') || errorMessage.includes('Voting period has ended')) {
+  if (
+    errorMessage.includes('GovVotingEnded') ||
+    errorMessage.includes('VotingEnded') ||
+    errorMessage.includes('Voting period has ended')
+  ) {
     return createContractError(ContractErrorCode.GOV_VOTING_ENDED);
   }
-  if (errorMessage.includes('VotingStillActive') || errorMessage.includes('Voting is still active')) {
+  if (
+    errorMessage.includes('GovVotingStillActive') ||
+    errorMessage.includes('VotingStillActive') ||
+    errorMessage.includes('Voting is still active')
+  ) {
     return createContractError(ContractErrorCode.GOV_VOTING_STILL_ACTIVE);
   }
-  if (errorMessage.includes('AlreadyVoted') || errorMessage.includes('already voted')) {
+  if (
+    errorMessage.includes('GovAlreadyVoted') ||
+    errorMessage.includes('AlreadyVoted') ||
+    errorMessage.includes('already voted')
+  ) {
     return createContractError(ContractErrorCode.GOV_ALREADY_VOTED);
   }
-  if (errorMessage.includes('ProposalNotApproved') || errorMessage.includes('not been approved')) {
+  if (
+    errorMessage.includes('GovProposalNotApproved') ||
+    errorMessage.includes('ProposalNotApproved') ||
+    errorMessage.includes('not been approved')
+  ) {
     return createContractError(ContractErrorCode.GOV_PROPOSAL_NOT_APPROVED);
   }
-  if (errorMessage.includes('ExecutionDelayNotMet') || errorMessage.includes('delay period has not elapsed')) {
+  if (
+    errorMessage.includes('GovExecutionDelayNotMet') ||
+    errorMessage.includes('ExecutionDelayNotMet') ||
+    errorMessage.includes('delay period has not elapsed')
+  ) {
     return createContractError(ContractErrorCode.GOV_EXECUTION_DELAY_NOT_MET);
   }
-  if (errorMessage.includes('ProposalExpired') || errorMessage.includes('Proposal has expired')) {
+  if (
+    errorMessage.includes('GovProposalExpired') ||
+    errorMessage.includes('ProposalExpired') ||
+    errorMessage.includes('Proposal has expired')
+  ) {
     return createContractError(ContractErrorCode.GOV_PROPOSAL_EXPIRED);
   }
-  if (errorMessage.includes('InsufficientStake') || errorMessage.includes('Insufficient stake')) {
+  if (
+    errorMessage.includes('GovInsufficientStake') ||
+    errorMessage.includes('InsufficientStake') ||
+    errorMessage.includes('Insufficient stake')
+  ) {
     return createContractError(ContractErrorCode.GOV_INSUFFICIENT_STAKE);
   }
-  if (errorMessage.includes('InvalidThreshold') || errorMessage.includes('threshold value is invalid')) {
+  if (
+    errorMessage.includes('GovInvalidThreshold') ||
+    errorMessage.includes('InvalidThreshold') ||
+    errorMessage.includes('threshold value is invalid')
+  ) {
     return createContractError(ContractErrorCode.GOV_INVALID_THRESHOLD);
   }
-  if (errorMessage.includes('ThresholdTooLow') || errorMessage.includes('threshold is too low')) {
+  if (
+    errorMessage.includes('GovThresholdTooLow') ||
+    errorMessage.includes('ThresholdTooLow') ||
+    errorMessage.includes('threshold is too low')
+  ) {
     return createContractError(ContractErrorCode.GOV_THRESHOLD_TOO_LOW);
   }
 

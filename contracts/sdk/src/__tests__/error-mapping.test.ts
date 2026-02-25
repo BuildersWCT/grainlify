@@ -15,6 +15,7 @@ import {
   BOUNTY_ESCROW_ERROR_MAP,
   GOVERNANCE_ERROR_MAP,
   CIRCUIT_BREAKER_ERROR_MAP,
+  PROGRAM_ESCROW_ERROR_MAP,
 } from '../errors';
 
 // -----------------------------------------------------------------------
@@ -24,16 +25,25 @@ import {
 
 /** contracts/bounty_escrow/contracts/escrow/src/lib.rs — Error enum */
 const BOUNTY_ESCROW_DISCRIMINANTS: number[] = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, /* gap at 15 */ 16, 17, 18,
+  // Generic/shared (from grainlify-common)
+  1, 2, 3, 4, 5, 7, 11, 12,
+  // Bounty-specific (from grainlify-common)
+  200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211,
 ];
 
 /** contracts/grainlify-core/src/governance.rs — Error enum */
 const GOVERNANCE_DISCRIMINANTS: number[] = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+  // Generic/shared (from grainlify-common)
+  2,
+  // Governance-specific (from grainlify-common)
+  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
 ];
 
 /** contracts/program-escrow/src/error_recovery.rs — u32 constants */
-const CIRCUIT_BREAKER_CODES: number[] = [1001, 1002, 1003];
+const CIRCUIT_BREAKER_CODES: number[] = [400, 401, 402];
+
+/** contracts/program-escrow/src/lib.rs — Error enum (from grainlify-common) */
+const PROGRAM_ESCROW_DISCRIMINANTS: number[] = [7, 300, 301, 302, 303, 304, 305, 306];
 
 // =======================================================================
 // 1. Completeness: every ContractErrorCode has a non-empty message
@@ -71,7 +81,7 @@ describe('Error mapping completeness', () => {
 // =======================================================================
 describe('Numeric error code tables', () => {
   describe('Bounty-escrow', () => {
-    it('maps every contract discriminant (1-18, excluding 15)', () => {
+    it('maps every contract discriminant', () => {
       for (const code of BOUNTY_ESCROW_DISCRIMINANTS) {
         expect(BOUNTY_ESCROW_ERROR_MAP[code]).toBeDefined();
       }
@@ -87,9 +97,9 @@ describe('Numeric error code tables', () => {
     });
 
     it('returns generic error for unmapped code', () => {
-      const err = parseContractErrorByCode(15, 'bounty_escrow');
+      const err = parseContractErrorByCode(9999, 'bounty_escrow');
       expect(err.code).toBe('CONTRACT_ERROR');
-      expect(err.contractErrorCode).toBe(15);
+      expect(err.contractErrorCode).toBe(9999);
       expect(err.message).toContain('Unknown');
     });
   });
@@ -118,7 +128,7 @@ describe('Numeric error code tables', () => {
   });
 
   describe('Circuit-breaker', () => {
-    it('maps every error constant (1001-1003)', () => {
+    it('maps every error constant', () => {
       for (const code of CIRCUIT_BREAKER_CODES) {
         expect(CIRCUIT_BREAKER_ERROR_MAP[code]).toBeDefined();
       }
@@ -136,6 +146,29 @@ describe('Numeric error code tables', () => {
     it('returns generic error for unmapped code', () => {
       const err = parseContractErrorByCode(9999, 'circuit_breaker');
       expect(err.code).toBe('CONTRACT_ERROR');
+    });
+  });
+
+  describe('Program-escrow', () => {
+    it('maps every contract discriminant', () => {
+      for (const code of PROGRAM_ESCROW_DISCRIMINANTS) {
+        expect(PROGRAM_ESCROW_ERROR_MAP[code]).toBeDefined();
+      }
+    });
+
+    it('resolves via parseContractErrorByCode', () => {
+      for (const code of PROGRAM_ESCROW_DISCRIMINANTS) {
+        const err = parseContractErrorByCode(code, 'program_escrow');
+        expect(err).toBeInstanceOf(ContractError);
+        expect(err.code).not.toBe('CONTRACT_ERROR');
+        expect(err.contractErrorCode).toBe(code);
+      }
+    });
+
+    it('returns generic error for unmapped code', () => {
+      const err = parseContractErrorByCode(1, 'program_escrow');
+      expect(err.code).toBe('CONTRACT_ERROR');
+      expect(err.contractErrorCode).toBe(1);
     });
   });
 });
@@ -263,10 +296,10 @@ describe('parseContractError string matching', () => {
 describe('Cross-layer consistency', () => {
   it('bounty-escrow numeric and string parsers yield the same code', () => {
     const numericToString: [number, string][] = [
-      [3,  'BountyExists'],
-      [4,  'Bounty not found'],
-      [13, 'Bounty amount is invalid'],
-      [16, 'InsufficientFunds'],
+      [200, 'BountyExists'],
+      [201, 'Bounty not found'],
+      [4, 'Bounty amount is invalid'],
+      [5, 'InsufficientFunds'],
     ];
 
     for (const [code, message] of numericToString) {
@@ -278,10 +311,10 @@ describe('Cross-layer consistency', () => {
 
   it('governance numeric and string parsers yield the same code', () => {
     const numericToString: [number, string][] = [
-      [6,  'ProposalNotFound'],
-      [9,  'VotingEnded'],
-      [11, 'AlreadyVoted'],
-      [14, 'ProposalExpired'],
+      [104, 'ProposalNotFound'],
+      [107, 'VotingEnded'],
+      [109, 'AlreadyVoted'],
+      [112, 'ProposalExpired'],
     ];
 
     for (const [code, message] of numericToString) {
@@ -298,12 +331,12 @@ describe('Cross-layer consistency', () => {
 describe('Enum size regression guards', () => {
   it('ContractErrorCode has the expected number of values', () => {
     const count = Object.keys(ContractErrorCode).length;
-    // 10 program-escrow + 17 bounty-escrow + 14 governance + 3 circuit-breaker = 44
-    expect(count).toBe(44);
+    // Keep this as a guardrail: update intentionally when adding/removing error codes.
+    expect(count).toBe(54);
   });
 
-  it('BOUNTY_ESCROW_ERROR_MAP has 17 entries', () => {
-    expect(Object.keys(BOUNTY_ESCROW_ERROR_MAP).length).toBe(19);
+  it('BOUNTY_ESCROW_ERROR_MAP has expected entries', () => {
+    expect(Object.keys(BOUNTY_ESCROW_ERROR_MAP).length).toBe(21);
   });
 
   it('GOVERNANCE_ERROR_MAP has 14 entries', () => {

@@ -74,25 +74,8 @@ pub const PROPOSAL_COUNT: Symbol = symbol_short!("PROP_CNT");
 pub const VOTES: Symbol = symbol_short!("VOTES");
 pub const GOVERNANCE_CONFIG: Symbol = symbol_short!("GOV_CFG");
 
-#[soroban_sdk::contracterror]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u32)]
-pub enum Error {
-    NotInitialized = 1,
-    InvalidThreshold = 2,
-    ThresholdTooLow = 3,
-    InsufficientStake = 4,
-    ProposalsNotFound = 5,
-    ProposalNotFound = 6,
-    ProposalNotActive = 7,
-    VotingNotStarted = 8,
-    VotingEnded = 9,
-    VotingStillActive = 10,
-    AlreadyVoted = 11,
-    ProposalNotApproved = 12,
-    ExecutionDelayNotMet = 13,
-    ProposalExpired = 14,
-}
+pub use grainlify_common::Error;
+// Removed local Error enum as it is now unified in grainlify-common
 
 // --- CLAVE: Añadir macro #[contract] ---
 // Note: Commented out to avoid symbol conflicts when used as a module
@@ -108,10 +91,10 @@ impl GovernanceContract {
     ) -> Result<(), Error> {
         admin.require_auth();
         if config.quorum_percentage > 10000 || config.approval_threshold > 10000 {
-            return Err(Error::InvalidThreshold);
+            return Err(Error::GovInvalidThreshold);
         }
         if config.approval_threshold < 5000 {
-            return Err(Error::ThresholdTooLow);
+            return Err(Error::GovThresholdTooLow);
         }
         env.storage().instance().set(&GOVERNANCE_CONFIG, &config);
         env.storage().instance().set(&PROPOSAL_COUNT, &0u32);
@@ -177,16 +160,16 @@ impl GovernanceContract {
             .storage()
             .instance()
             .get(&PROPOSALS)
-            .ok_or(Error::ProposalsNotFound)?;
-        let mut proposal = proposals.get(proposal_id).ok_or(Error::ProposalNotFound)?;
+            .ok_or(Error::GovProposalsNotFound)?;
+        let mut proposal = proposals.get(proposal_id).ok_or(Error::GovProposalNotFound)?;
 
         if proposal.status != ProposalStatus::Active {
-            return Err(Error::ProposalNotActive);
+            return Err(Error::GovProposalNotActive);
         }
 
         let current_time = env.ledger().timestamp();
         if current_time > proposal.voting_end {
-            return Err(Error::VotingEnded);
+            return Err(Error::GovVotingEnded);
         }
 
         let mut votes: Map<(u32, Address), Vote> = env
@@ -195,7 +178,7 @@ impl GovernanceContract {
             .get(&VOTES)
             .unwrap_or(Map::new(&env));
         if votes.contains_key((proposal_id, voter.clone())) {
-            return Err(Error::AlreadyVoted);
+            return Err(Error::GovAlreadyVoted);
         }
 
         let config: GovernanceConfig = env
@@ -247,8 +230,8 @@ impl GovernanceContract {
             .storage()
             .instance()
             .get(&PROPOSALS)
-            .ok_or(Error::ProposalsNotFound)?;
-        let mut proposal = proposals.get(proposal_id).ok_or(Error::ProposalNotFound)?;
+            .ok_or(Error::GovProposalsNotFound)?;
+        let mut proposal = proposals.get(proposal_id).ok_or(Error::GovProposalNotFound)?;
         let config: GovernanceConfig = env
             .storage()
             .instance()
@@ -256,7 +239,7 @@ impl GovernanceContract {
             .ok_or(Error::NotInitialized)?;
 
         if env.ledger().timestamp() <= proposal.voting_end {
-            return Err(Error::VotingStillActive);
+            return Err(Error::GovVotingStillActive);
         }
 
         // Lógica de umbral (Threshold)
@@ -326,7 +309,7 @@ mod test {
         client.cast_vote(&user, &prop_id, &VoteType::For);
 
         let result = client.try_cast_vote(&user, &prop_id, &VoteType::For);
-        assert_eq!(result, Err(Ok(Error::AlreadyVoted)));
+        assert_eq!(result, Err(Ok(Error::GovAlreadyVoted)));
     }
 
     #[test]
@@ -342,7 +325,7 @@ mod test {
         env.ledger().with_mut(|li| li.timestamp = 200); // Saltamos al futuro (periodo era 100)
 
         let result = client.try_cast_vote(&user, &prop_id, &VoteType::For);
-        assert_eq!(result, Err(Ok(Error::VotingEnded)));
+        assert_eq!(result, Err(Ok(Error::GovVotingEnded)));
     }
 
     #[test]
@@ -426,7 +409,7 @@ mod test {
         env.ledger().with_mut(|li| li.timestamp = 1000);
         let before = env.events().all().len();
         let res = client.try_cast_vote(&voter, &prop_id, &VoteType::For);
-        assert_eq!(res, Err(Ok(Error::VotingEnded)));
+        assert_eq!(res, Err(Ok(Error::GovVotingEnded)));
         let after = env.events().all().len();
         assert_eq!(before, after);
     }
@@ -444,7 +427,7 @@ mod test {
         client.cast_vote(&voter, &prop_id, &VoteType::For);
         let before = env.events().all().len();
         let res = client.try_cast_vote(&voter, &prop_id, &VoteType::For);
-        assert_eq!(res, Err(Ok(Error::AlreadyVoted)));
+        assert_eq!(res, Err(Ok(Error::GovAlreadyVoted)));
         let after = env.events().all().len();
         assert_eq!(before, after);
     }
@@ -493,5 +476,4 @@ mod test {
         let status = client.finalize_proposal(&proposal_id);
         assert_eq!(status, ProposalStatus::Approved);
     }
-    */
 }

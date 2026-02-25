@@ -469,14 +469,8 @@ pub struct ProgramInitItem {
 pub const MAX_BATCH_SIZE: u32 = 100;
 
 /// Errors for batch program registration.
-#[contracterror]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u32)]
-pub enum BatchError {
-    InvalidBatchSize = 1,
-    ProgramAlreadyExists = 2,
-    DuplicateProgramId = 3,
-}
+pub use grainlify_common::Error;
+// Removed local BatchError enum as it is now unified in grainlify-common
 
 
 #[contracttype]
@@ -589,28 +583,28 @@ impl ProgramEscrowContract {
     /// Batch-initialize multiple programs in one transaction (all-or-nothing).
     ///
     /// # Errors
-    /// * `BatchError::InvalidBatchSize` - empty or len > MAX_BATCH_SIZE
-    /// * `BatchError::DuplicateProgramId` - duplicate program_id in items
-    /// * `BatchError::ProgramAlreadyExists` - a program_id already registered
+    /// * `Error::InvalidBatchSize` - empty or len > MAX_BATCH_SIZE
+    /// * `Error::ProgDuplicateProgramId` - duplicate program_id in items
+    /// * `Error::ProgProgramAlreadyExists` - a program_id already registered
     pub fn batch_initialize_programs(
         env: Env,
         items: Vec<ProgramInitItem>,
-    ) -> Result<u32, BatchError> {
+    ) -> Result<u32, Error> {
         let batch_size = items.len() as u32;
         if batch_size == 0 || batch_size > MAX_BATCH_SIZE {
-            return Err(BatchError::InvalidBatchSize);
+            return Err(Error::InvalidBatchSize);
         }
         for i in 0..batch_size {
             for j in (i + 1)..batch_size {
                 if items.get(i).unwrap().program_id == items.get(j).unwrap().program_id {
-                    return Err(BatchError::DuplicateProgramId);
+                    return Err(Error::ProgDuplicateProgramId);
                 }
             }
         }
         for i in 0..batch_size {
             let program_key = DataKey::Program(items.get(i).unwrap().program_id.clone());
             if env.storage().instance().has(&program_key) {
-                return Err(BatchError::ProgramAlreadyExists);
+                return Err(Error::ProgProgramAlreadyExists);
             }
         }
 
@@ -627,7 +621,7 @@ impl ProgramEscrowContract {
             let token_address = item.token_address.clone();
 
             if program_id.is_empty() {
-                return Err(BatchError::InvalidBatchSize);
+                return Err(Error::InvalidBatchSize);
             }
 
             let program_data = ProgramData {

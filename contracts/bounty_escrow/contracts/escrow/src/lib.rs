@@ -354,46 +354,8 @@ const BASIS_POINTS: i128 = 10_000;
 const MAX_FEE_RATE: i128 = 5_000; // 50% max fee
 const MAX_BATCH_SIZE: u32 = 20;
 
-#[contracterror]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u32)]
-pub enum Error {
-    AlreadyInitialized = 1,
-    NotInitialized = 2,
-    BountyExists = 3,
-    BountyNotFound = 4,
-    FundsNotLocked = 5,
-    DeadlineNotPassed = 6,
-    Unauthorized = 7,
-    InvalidFeeRate = 8,
-    FeeRecipientNotSet = 9,
-    InvalidBatchSize = 10,
-    BatchSizeMismatch = 11,
-    DuplicateBountyId = 12,
-    /// Returned when amount is invalid (zero, negative, or exceeds available)
-    InvalidAmount = 13,
-    /// Returned when deadline is invalid (in the past or too far in the future)
-    InvalidDeadline = 14,
-    /// Returned when contract has insufficient funds for the operation
-    InsufficientFunds = 16,
-    /// Returned when refund is attempted without admin approval
-    RefundNotApproved = 17,
-    FundsPaused = 18,
-    /// Returned when lock amount is below the configured policy minimum (Issue #62)
-    AmountBelowMinimum = 19,
-    /// Returned when lock amount is above the configured policy maximum (Issue #62)
-    AmountAboveMaximum = 20,
-    /// Returned when refund is blocked by a pending claim/dispute
-    NotPaused = 21,
-    ClaimPending = 22,
-    CapabilityNotFound = 23,
-    CapabilityExpired = 24,
-    CapabilityRevoked = 25,
-    CapabilityActionMismatch = 26,
-    CapabilityAmountExceeded = 27,
-    CapabilityUsesExhausted = 28,
-    CapabilityExceedsAuthority = 29,
-}
+pub use grainlify_common::Error;
+// Removed local Error enum as it is now unified in grainlify-common
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -666,14 +628,14 @@ impl BountyEscrowContract {
 
         if let Some(rate) = lock_fee_rate {
             if !(0..=MAX_FEE_RATE).contains(&rate) {
-                return Err(Error::InvalidFeeRate);
+                return Err(Error::BountyInvalidFeeRate);
             }
             fee_config.lock_fee_rate = rate;
         }
 
         if let Some(rate) = release_fee_rate {
             if !(0..=MAX_FEE_RATE).contains(&rate) {
-                return Err(Error::InvalidFeeRate);
+                return Err(Error::BountyInvalidFeeRate);
             }
             fee_config.release_fee_rate = rate;
         }
@@ -794,7 +756,7 @@ impl BountyEscrowContract {
 
         let flags = Self::get_pause_flags(&env);
         if !flags.lock_paused {
-            return Err(Error::NotPaused);
+            return Err(Error::BountyNotPaused);
         }
 
         let token_address: Address = env.storage().instance().get(&DataKey::Token).unwrap();
@@ -1293,7 +1255,7 @@ impl BountyEscrowContract {
         anti_abuse::check_rate_limit(&env, depositor.clone());
 
         if Self::check_paused(&env, symbol_short!("lock")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
 
         let _start = env.ledger().timestamp();
@@ -1319,10 +1281,10 @@ impl BountyEscrowContract {
             .get::<DataKey, (i128, i128)>(&DataKey::AmountPolicy)
         {
             if amount < min_amount {
-                return Err(Error::AmountBelowMinimum);
+                return Err(Error::BountyAmountBelowMinimum);
             }
             if amount > max_amount {
-                return Err(Error::AmountAboveMaximum);
+                return Err(Error::BountyAmountAboveMaximum);
             }
         }
 
@@ -1388,7 +1350,7 @@ impl BountyEscrowContract {
     /// Only the admin (backend) can authorize this.
     pub fn release_funds(env: Env, bounty_id: u64, contributor: Address) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("release")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         let _start = env.ledger().timestamp();
 
@@ -1417,7 +1379,7 @@ impl BountyEscrowContract {
             .unwrap();
 
         if escrow.status != EscrowStatus::Locked {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
@@ -1544,7 +1506,7 @@ impl BountyEscrowContract {
     /// Beneficiary must call claim() within the window to receive funds.
     pub fn authorize_claim(env: Env, bounty_id: u64, recipient: Address) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("release")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         if !env.storage().instance().has(&DataKey::Admin) {
             return Err(Error::NotInitialized);
@@ -1563,7 +1525,7 @@ impl BountyEscrowContract {
             .unwrap();
 
         if escrow.status != EscrowStatus::Locked {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         let now = env.ledger().timestamp();
@@ -1599,7 +1561,7 @@ impl BountyEscrowContract {
     /// Beneficiary calls this to claim their authorized funds within the window.
     pub fn claim(env: Env, bounty_id: u64) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("release")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         if !env
             .storage()
@@ -1621,7 +1583,7 @@ impl BountyEscrowContract {
             return Err(Error::DeadlineNotPassed); // reuse or add ClaimExpired error
         }
         if claim.claimed {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
@@ -1759,7 +1721,7 @@ impl BountyEscrowContract {
             .unwrap();
 
         if claim.claimed {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         env.storage()
@@ -1815,7 +1777,7 @@ impl BountyEscrowContract {
 
         if escrow.status != EscrowStatus::Locked && escrow.status != EscrowStatus::PartiallyRefunded
         {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         if amount <= 0 || amount > escrow.remaining_amount {
@@ -1869,7 +1831,7 @@ impl BountyEscrowContract {
             .unwrap();
 
         if escrow.status != EscrowStatus::Locked {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         // Guard: zero or negative payout makes no sense and would corrupt state
@@ -1922,7 +1884,7 @@ impl BountyEscrowContract {
     /// Refunds the full remaining_amount (accounts for any prior partial releases).
     pub fn refund(env: Env, bounty_id: u64) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("refund")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
 
         if !env.storage().persistent().has(&DataKey::Escrow(bounty_id)) {
@@ -1937,7 +1899,7 @@ impl BountyEscrowContract {
 
         if escrow.status != EscrowStatus::Locked && escrow.status != EscrowStatus::PartiallyRefunded
         {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         // GUARD 1: Block refund if there is a pending claim (Issue #391 fix)
@@ -1952,7 +1914,7 @@ impl BountyEscrowContract {
                 .get(&DataKey::PendingClaim(bounty_id))
                 .unwrap();
             if !claim.claimed {
-                return Err(Error::ClaimPending);
+                return Err(Error::BountyClaimPending);
             }
         }
 
@@ -2603,7 +2565,7 @@ impl BountyEscrowContract {
     /// This operation is atomic - if any item fails, the entire transaction reverts.
     pub fn batch_lock_funds(env: Env, items: Vec<LockFundsItem>) -> Result<u32, Error> {
         if Self::check_paused(&env, symbol_short!("lock")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         // Validate batch size
         let batch_size = items.len();
@@ -2647,7 +2609,7 @@ impl BountyEscrowContract {
                 }
             }
             if count > 1 {
-                return Err(Error::DuplicateBountyId);
+                return Err(Error::BountyDuplicateId);
             }
         }
 
@@ -2736,7 +2698,7 @@ impl BountyEscrowContract {
     /// This operation is atomic - if any item fails, the entire transaction reverts.
     pub fn batch_release_funds(env: Env, items: Vec<ReleaseFundsItem>) -> Result<u32, Error> {
         if Self::check_paused(&env, symbol_short!("release")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         // Validate batch size
         let batch_size = items.len();
@@ -2779,7 +2741,7 @@ impl BountyEscrowContract {
 
             // Check if funds are locked
             if escrow.status != EscrowStatus::Locked {
-                return Err(Error::FundsNotLocked);
+                return Err(Error::BountyFundsNotLocked);
             }
 
             // Check for duplicate bounty_ids in the batch
@@ -2790,7 +2752,7 @@ impl BountyEscrowContract {
                 }
             }
             if count > 1 {
-                return Err(Error::DuplicateBountyId);
+                return Err(Error::BountyDuplicateId);
             }
 
             total_amount = total_amount
@@ -3105,13 +3067,13 @@ mod escrow_status_transition_tests {
                 label: "Released to Released (Release)",
                 from: EscrowStatus::Released,
                 action: TransitionAction::Release,
-                expected_result: Err(Error::FundsNotLocked),
+                expected_result: Err(Error::BountyFundsNotLocked),
             },
             TransitionTestCase {
                 label: "Released to Refunded (Refund)",
                 from: EscrowStatus::Released,
                 action: TransitionAction::Refund,
-                expected_result: Err(Error::FundsNotLocked),
+                expected_result: Err(Error::BountyFundsNotLocked),
             },
             TransitionTestCase {
                 label: "Refunded to Locked (Lock)",
@@ -3123,13 +3085,13 @@ mod escrow_status_transition_tests {
                 label: "Refunded to Released (Release)",
                 from: EscrowStatus::Refunded,
                 action: TransitionAction::Release,
-                expected_result: Err(Error::FundsNotLocked),
+                expected_result: Err(Error::BountyFundsNotLocked),
             },
             TransitionTestCase {
                 label: "Refunded to Refunded (Refund)",
                 from: EscrowStatus::Refunded,
                 action: TransitionAction::Refund,
-                expected_result: Err(Error::FundsNotLocked),
+                expected_result: Err(Error::BountyFundsNotLocked),
             },
         ];
 
@@ -3299,7 +3261,7 @@ mod escrow_status_transition_tests {
         );
         assert_eq!(
             result.unwrap_err().unwrap(),
-            Error::FundsNotLocked,
+            Error::BountyFundsNotLocked,
             "Expected FundsNotLocked error variant"
         );
         let stored = setup.client.get_escrow_info(&bounty_id);
@@ -3346,7 +3308,7 @@ mod escrow_status_transition_tests {
         );
         assert_eq!(
             result.unwrap_err().unwrap(),
-            Error::FundsNotLocked,
+            Error::BountyFundsNotLocked,
             "Expected FundsNotLocked on idempotent attempt"
         );
     }
