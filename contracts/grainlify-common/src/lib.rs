@@ -25,6 +25,7 @@ pub enum Error {
     CapabilityAmountExceeded = 27,
     CapabilityUsesExhausted = 28,
     CapabilityExceedsAuthority = 29,
+    InvalidAssetId = 30,
 
     // --- Governance (100-199) ---
     GovInvalidThreshold = 100,

@@ -161,7 +161,9 @@ impl GovernanceContract {
             .instance()
             .get(&PROPOSALS)
             .ok_or(Error::GovProposalsNotFound)?;
-        let mut proposal = proposals.get(proposal_id).ok_or(Error::GovProposalNotFound)?;
+        let mut proposal = proposals
+            .get(proposal_id)
+            .ok_or(Error::GovProposalNotFound)?;
 
         if proposal.status != ProposalStatus::Active {
             return Err(Error::GovProposalNotActive);
@@ -231,7 +233,9 @@ impl GovernanceContract {
             .instance()
             .get(&PROPOSALS)
             .ok_or(Error::GovProposalsNotFound)?;
-        let mut proposal = proposals.get(proposal_id).ok_or(Error::GovProposalNotFound)?;
+        let mut proposal = proposals
+            .get(proposal_id)
+            .ok_or(Error::GovProposalNotFound)?;
         let config: GovernanceConfig = env
             .storage()
             .instance()

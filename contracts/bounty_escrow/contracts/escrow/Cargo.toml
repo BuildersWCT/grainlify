@@ -11,6 +11,7 @@ doctest = false
 [dependencies]
 soroban-sdk = { workspace = true }
 grainlify-common = { path = "../../../grainlify-common" }
+grainlify-core = { path = "../../../grainlify-core", default-features = false }
 
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["alloc", "testutils"] }
