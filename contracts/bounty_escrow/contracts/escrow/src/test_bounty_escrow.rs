@@ -584,7 +584,7 @@ fn test_update_fee_config_rejects_negative_lock_fee() {
 
     let result =
         client.try_update_fee_config(&Some(-1), &None, &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -609,7 +609,7 @@ fn test_update_fee_config_rejects_negative_release_fee() {
 
     let result =
         client.try_update_fee_config(&None, &Some(-1), &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -634,7 +634,7 @@ fn test_update_fee_config_rejects_over_max_lock_fee() {
 
     let result =
         client.try_update_fee_config(&Some(5001), &None, &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -659,7 +659,7 @@ fn test_update_fee_config_rejects_over_max_release_fee() {
 
     let result =
         client.try_update_fee_config(&None, &Some(5001), &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -684,7 +684,7 @@ fn test_update_fee_config_rejects_overflow_lock_fee() {
 
     let result =
         client.try_update_fee_config(&Some(i128::MAX), &None, &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -709,7 +709,7 @@ fn test_update_fee_config_rejects_overflow_release_fee() {
 
     let result =
         client.try_update_fee_config(&None, &Some(i128::MAX), &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -849,7 +849,7 @@ fn test_update_fee_config_fails_with_one_invalid_rate_preserves_state() {
     let original_config = client.get_fee_config();
 
     let result = client.try_update_fee_config(&Some(300), &Some(5001), &None, &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let config = client.get_fee_config();
     assert_eq!(config.lock_fee_rate, original_config.lock_fee_rate);
@@ -871,7 +871,7 @@ fn test_update_fee_config_rejects_100_percent_lock_fee() {
 
     let result =
         client.try_update_fee_config(&Some(10_000), &None, &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -896,7 +896,7 @@ fn test_update_fee_config_rejects_100_percent_release_fee() {
 
     let result =
         client.try_update_fee_config(&None, &Some(10_000), &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -921,7 +921,7 @@ fn test_update_fee_config_rejects_over_100_percent_lock_fee() {
 
     let result =
         client.try_update_fee_config(&Some(10_001), &None, &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -946,7 +946,7 @@ fn test_update_fee_config_rejects_over_100_percent_release_fee() {
 
     let result =
         client.try_update_fee_config(&None, &Some(10_001), &Some(fee_recipient.clone()), &None);
-    assert_eq!(result, Err(Ok(ContractError::InvalidFeeRate)));
+    assert_eq!(result, Err(Ok(ContractError::BountyInvalidFeeRate)));
 
     let current_config = client.get_fee_config();
     assert_eq!(current_config.lock_fee_rate, original_config.lock_fee_rate);
@@ -960,7 +960,7 @@ fn test_update_fee_config_rejects_over_100_percent_release_fee() {
 
 /// Locking an amount strictly below the configured minimum must be rejected.
 #[test]
-#[should_panic(expected = "Error(Contract, #19)")] // AmountBelowMinimum
+#[should_panic(expected = "Error(Contract, #208)")] // BountyAmountBelowMinimum
 fn test_lock_funds_below_minimum_rejected() {
     let (env, client, _) = create_test_env();
     let admin = Address::generate(&env);
@@ -981,7 +981,7 @@ fn test_lock_funds_below_minimum_rejected() {
 
 /// Locking an amount strictly above the configured maximum must be rejected.
 #[test]
-#[should_panic(expected = "Error(Contract, #20)")] // AmountAboveMaximum
+#[should_panic(expected = "Error(Contract, #209)")] // BountyAmountAboveMaximum
 fn test_lock_funds_above_maximum_rejected() {
     let (env, client, _) = create_test_env();
     let admin = Address::generate(&env);
@@ -1076,7 +1076,7 @@ fn test_lock_funds_within_range_succeeds() {
 /// Only the admin may call `set_amount_policy`.  Any other caller must be
 /// rejected with an Unauthorized error.
 #[test]
-#[should_panic(expected = "Error(Contract, #7)")] // Unauthorized
+#[should_panic(expected = "Error(Contract, #3)")] // Unauthorized
 fn test_non_admin_cannot_set_amount_policy() {
     let (env, client, _) = create_test_env();
     let admin = Address::generate(&env);
@@ -1162,7 +1162,7 @@ fn test_amount_policy_can_be_updated_by_admin() {
 /// min - 1 is the tightest possible value below the minimum boundary and must
 /// be rejected (off-by-one lower).
 #[test]
-#[should_panic(expected = "Error(Contract, #19)")] // AmountBelowMinimum
+#[should_panic(expected = "Error(Contract, #208)")] // BountyAmountBelowMinimum
 fn test_one_below_minimum_boundary_rejected() {
     let (env, client, _) = create_test_env();
     let admin = Address::generate(&env);
@@ -1184,7 +1184,7 @@ fn test_one_below_minimum_boundary_rejected() {
 /// max + 1 is the tightest possible value above the maximum boundary and must
 /// be rejected (off-by-one upper).
 #[test]
-#[should_panic(expected = "Error(Contract, #20)")] // AmountAboveMaximum
+#[should_panic(expected = "Error(Contract, #209)")] // BountyAmountAboveMaximum
 fn test_one_above_maximum_boundary_rejected() {
     let (env, client, _) = create_test_env();
     let admin = Address::generate(&env);

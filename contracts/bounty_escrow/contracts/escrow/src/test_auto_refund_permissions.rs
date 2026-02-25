@@ -137,7 +137,7 @@ fn test_auto_refund_depositor_can_trigger_after_deadline() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #6)")] // DeadlineNotPassed
+#[should_panic(expected = "Error(Contract, #12)")] // DeadlineNotPassed
 fn test_auto_refund_fails_before_deadline() {
     let setup = TestSetup::new();
     let bounty_id = 1;
@@ -153,7 +153,7 @@ fn test_auto_refund_fails_before_deadline() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #6)")] // DeadlineNotPassed
+#[should_panic(expected = "Error(Contract, #12)")] // DeadlineNotPassed
 fn test_auto_refund_admin_cannot_bypass_deadline() {
     let setup = TestSetup::new();
     let bounty_id = 1;
@@ -194,7 +194,7 @@ fn test_auto_refund_at_exact_deadline() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")] // FundsNotLocked
+#[should_panic(expected = "Error(Contract, #202)")] // BountyFundsNotLocked
 fn test_auto_refund_idempotent_second_call_fails() {
     let setup = TestSetup::new();
     let bounty_id = 1;

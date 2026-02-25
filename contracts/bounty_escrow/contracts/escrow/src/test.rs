@@ -92,7 +92,7 @@ fn test_lock_funds_success() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #3)")]
+#[should_panic(expected = "Error(Contract, #200)")]
 fn test_lock_funds_duplicate() {
     let setup = TestSetup::new();
     let bounty_id = 1;
@@ -164,7 +164,7 @@ fn test_release_funds_success() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_release_funds_already_released() {
     let setup = TestSetup::new();
     let bounty_id = 1;
@@ -180,7 +180,7 @@ fn test_release_funds_already_released() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_release_funds_not_found() {
     let setup = TestSetup::new();
     let bounty_id = 1;
@@ -216,7 +216,7 @@ fn test_refund_success() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #6)")]
+#[should_panic(expected = "Error(Contract, #12)")]
 fn test_refund_too_early() {
     let setup = TestSetup::new();
     let bounty_id = 1;
@@ -358,7 +358,7 @@ fn test_partial_release_full_amount_in_one_shot_marks_released() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #16)")]
+#[should_panic(expected = "Error(Contract, #5)")]
 fn test_partial_release_overpayment_panics() {
     let setup = TestSetup::new();
     let bounty_id = 46;
@@ -407,7 +407,7 @@ fn test_partial_release_exact_remaining_after_prior_release() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #13)")]
+#[should_panic(expected = "Error(Contract, #4)")]
 fn test_partial_release_zero_amount_rejected() {
     let setup = TestSetup::new();
     let bounty_id = 47;
@@ -455,7 +455,7 @@ fn test_partial_release_remaining_amount_never_goes_negative() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_partial_release_bounty_not_found() {
     let setup = TestSetup::new();
     setup
@@ -464,7 +464,7 @@ fn test_partial_release_bounty_not_found() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_partial_release_on_already_released_bounty_panics() {
     let setup = TestSetup::new();
     let bounty_id = 50;
@@ -546,7 +546,7 @@ fn test_claim_within_window_transfers_funds() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #6)")]
+#[should_panic(expected = "Error(Contract, #12)")]
 fn test_claim_after_window_expires_panics() {
     let setup = TestSetup::new();
     let bounty_id = 101_u64;
@@ -594,7 +594,7 @@ fn test_cancel_pending_claim_restores_escrow() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_cancel_pending_claim_not_found() {
     let setup = TestSetup::new();
     setup.escrow.cancel_pending_claim(&999_u64);
@@ -656,7 +656,7 @@ fn test_cancel_claim_then_use_release_funds_normally() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_claim_twice_panics() {
     let setup = TestSetup::new();
     let bounty_id = 105_u64;
@@ -703,7 +703,7 @@ fn test_claim_does_not_affect_other_bounties() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #6)")]
+#[should_panic(expected = "Error(Contract, #12)")]
 fn test_authorize_claim_zero_window_expires_immediately() {
     let setup = TestSetup::new();
     let bounty_id = 108_u64;
@@ -746,14 +746,14 @@ fn test_claim_at_exact_window_boundary_succeeds() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_authorize_claim_on_nonexistent_bounty() {
     let setup = TestSetup::new();
     setup.escrow.authorize_claim(&999_u64, &setup.contributor);
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_authorize_claim_on_released_bounty() {
     let setup = TestSetup::new();
     let bounty_id = 110_u64;
@@ -768,7 +768,7 @@ fn test_authorize_claim_on_released_bounty() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_authorize_claim_on_refunded_bounty() {
     let setup = TestSetup::new();
     let bounty_id = 111_u64;
@@ -825,7 +825,7 @@ fn test_set_claim_window_success() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_get_pending_claim_not_found() {
     let setup = TestSetup::new();
     setup.escrow.get_pending_claim(&999_u64);
@@ -897,7 +897,7 @@ fn test_batch_lock_funds_success() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #10)")]
+#[should_panic(expected = "Error(Contract, #7)")]
 fn test_batch_lock_funds_empty() {
     let setup = TestSetup::new();
     let items: Vec<LockFundsItem> = Vec::new(&setup.env);
@@ -929,7 +929,7 @@ fn test_batch_lock_funds_single_item() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #10)")]
+#[should_panic(expected = "Error(Contract, #7)")]
 fn test_batch_lock_funds_exceeds_max_batch_size() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -969,7 +969,7 @@ fn test_batch_lock_funds_at_max_batch_size() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #3)")]
+#[should_panic(expected = "Error(Contract, #200)")]
 fn test_batch_lock_funds_duplicate_bounty_id() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -998,7 +998,7 @@ fn test_batch_lock_funds_duplicate_bounty_id() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #12)")]
+#[should_panic(expected = "Error(Contract, #205)")]
 fn test_batch_lock_funds_duplicate_in_batch() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1023,7 +1023,7 @@ fn test_batch_lock_funds_duplicate_in_batch() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #12)")]
+#[should_panic(expected = "Error(Contract, #205)")]
 fn test_batch_lock_funds_triple_duplicate_in_batch() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1055,7 +1055,7 @@ fn test_batch_lock_funds_triple_duplicate_in_batch() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #12)")]
+#[should_panic(expected = "Error(Contract, #205)")]
 fn test_batch_lock_funds_non_adjacent_duplicates() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1087,7 +1087,7 @@ fn test_batch_lock_funds_non_adjacent_duplicates() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #13)")]
+#[should_panic(expected = "Error(Contract, #4)")]
 fn test_batch_lock_funds_zero_amount() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1106,7 +1106,7 @@ fn test_batch_lock_funds_zero_amount() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #13)")]
+#[should_panic(expected = "Error(Contract, #4)")]
 fn test_batch_lock_funds_negative_amount() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1125,7 +1125,7 @@ fn test_batch_lock_funds_negative_amount() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #13)")]
+#[should_panic(expected = "Error(Contract, #4)")]
 fn test_batch_lock_funds_mixed_valid_invalid_amounts() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1151,7 +1151,7 @@ fn test_batch_lock_funds_mixed_valid_invalid_amounts() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #3)")]
+#[should_panic(expected = "Error(Contract, #200)")]
 fn test_batch_lock_funds_first_valid_second_exists() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1181,7 +1181,7 @@ fn test_batch_lock_funds_first_valid_second_exists() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #3)")]
+#[should_panic(expected = "Error(Contract, #200)")]
 fn test_batch_operations_atomicity() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1259,7 +1259,7 @@ fn test_batch_release_funds_success() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #10)")]
+#[should_panic(expected = "Error(Contract, #7)")]
 fn test_batch_release_funds_empty() {
     let setup = TestSetup::new();
     let items: Vec<ReleaseFundsItem> = Vec::new(&setup.env);
@@ -1293,7 +1293,7 @@ fn test_batch_release_funds_single_item() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #10)")]
+#[should_panic(expected = "Error(Contract, #7)")]
 fn test_batch_release_funds_exceeds_max_batch_size() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1322,7 +1322,7 @@ fn test_batch_release_funds_exceeds_max_batch_size() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_batch_release_funds_not_found() {
     let setup = TestSetup::new();
     let contributor = Address::generate(&setup.env);
@@ -1339,7 +1339,7 @@ fn test_batch_release_funds_not_found() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_batch_release_funds_already_released() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1371,7 +1371,7 @@ fn test_batch_release_funds_already_released() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #12)")]
+#[should_panic(expected = "Error(Contract, #205)")]
 fn test_batch_release_funds_duplicate_in_batch() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1398,7 +1398,7 @@ fn test_batch_release_funds_duplicate_in_batch() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #4)")]
+#[should_panic(expected = "Error(Contract, #201)")]
 fn test_batch_release_funds_first_valid_second_not_found() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;
@@ -1424,7 +1424,7 @@ fn test_batch_release_funds_first_valid_second_not_found() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")]
+#[should_panic(expected = "Error(Contract, #202)")]
 fn test_batch_release_funds_mixed_locked_and_refunded() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 100;
@@ -1456,7 +1456,7 @@ fn test_batch_release_funds_mixed_locked_and_refunded() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #12)")]
+#[should_panic(expected = "Error(Contract, #205)")]
 fn test_batch_release_funds_non_adjacent_duplicates() {
     let setup = TestSetup::new();
     let deadline = setup.env.ledger().timestamp() + 1000;

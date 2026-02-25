@@ -358,7 +358,7 @@ fn test_emergency_withdraw_non_admin_fails() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #21)")]
+#[should_panic(expected = "Error(Contract, #210)")]
 fn test_emergency_withdraw_unpaused_fails() {
     let env = Env::default();
     env.mock_all_auths();
@@ -469,7 +469,7 @@ fn test_rbac_operator_cannot_emergency_withdraw() {
 
 /// emergency_withdraw FAILS even for admin when contract is NOT paused.
 #[test]
-#[should_panic(expected = "Error(Contract, #21)")]
+#[should_panic(expected = "Error(Contract, #210)")]
 fn test_rbac_admin_emergency_withdraw_requires_paused_state() {
     let env = Env::default();
     env.mock_all_auths();
@@ -550,7 +550,7 @@ fn test_rbac_pause_state_preserved_after_emergency_withdraw() {
 
 /// Partial pause: only lock paused, release still works — emergency_withdraw still requires lock_paused.
 #[test]
-#[should_panic(expected = "Error(Contract, #21)")]
+#[should_panic(expected = "Error(Contract, #210)")]
 fn test_rbac_emergency_withdraw_requires_lock_paused_not_release_paused() {
     let env = Env::default();
     env.mock_all_auths();
@@ -564,7 +564,7 @@ fn test_rbac_emergency_withdraw_requires_lock_paused_not_release_paused() {
 
 /// Partial pause: only refund paused — emergency_withdraw still requires lock_paused.
 #[test]
-#[should_panic(expected = "Error(Contract, #21)")]
+#[should_panic(expected = "Error(Contract, #210)")]
 fn test_rbac_emergency_withdraw_requires_lock_paused_not_refund_paused() {
     let env = Env::default();
     env.mock_all_auths();

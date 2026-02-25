@@ -469,7 +469,7 @@ mod test_batch_failure_modes {
             },
         ];
         let result = client.try_batch_release_funds(&items);
-        assert_eq!(result, Err(Ok(Error::FundsNotLocked)));
+        assert_eq!(result, Err(Ok(Error::BountyFundsNotLocked)));
     }
 
     /// A mix of valid and already-refunded bounties: the refunded one triggers
@@ -506,7 +506,7 @@ mod test_batch_failure_modes {
         ];
 
         let result = client.try_batch_release_funds(&items);
-        assert_eq!(result, Err(Ok(Error::FundsNotLocked)));
+        assert_eq!(result, Err(Ok(Error::BountyFundsNotLocked)));
 
         // Bounty 20 must remain Locked
         let escrow = client.get_escrow_info(&20);
@@ -576,7 +576,7 @@ mod test_batch_failure_modes {
         ];
 
         let result = client.try_batch_release_funds(&items);
-        assert_eq!(result, Err(Ok(Error::FundsNotLocked)));
+        assert_eq!(result, Err(Ok(Error::BountyFundsNotLocked)));
 
         // Bounty 32 must still be Locked
         let escrow32 = client.get_escrow_info(&32);

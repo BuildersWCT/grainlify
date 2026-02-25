@@ -847,7 +847,7 @@ impl BountyEscrowContract {
                     .get(&DataKey::PendingClaim(bounty_id))
                     .ok_or(Error::BountyNotFound)?;
                 if claim.claimed {
-                    return Err(Error::FundsNotLocked);
+                    return Err(Error::BountyFundsNotLocked);
                 }
                 if env.ledger().timestamp() > claim.expires_at {
                     return Err(Error::DeadlineNotPassed);
@@ -874,7 +874,7 @@ impl BountyEscrowContract {
                     .get(&DataKey::Escrow(bounty_id))
                     .ok_or(Error::BountyNotFound)?;
                 if escrow.status != EscrowStatus::Locked {
-                    return Err(Error::FundsNotLocked);
+                    return Err(Error::BountyFundsNotLocked);
                 }
                 if amount_limit > escrow.remaining_amount {
                     return Err(Error::CapabilityExceedsAuthority);
@@ -897,7 +897,7 @@ impl BountyEscrowContract {
                 if escrow.status != EscrowStatus::Locked
                     && escrow.status != EscrowStatus::PartiallyRefunded
                 {
-                    return Err(Error::FundsNotLocked);
+                    return Err(Error::BountyFundsNotLocked);
                 }
                 if amount_limit > escrow.remaining_amount {
                     return Err(Error::CapabilityExceedsAuthority);
@@ -925,7 +925,7 @@ impl BountyEscrowContract {
                     .get(&DataKey::PendingClaim(capability.bounty_id))
                     .ok_or(Error::BountyNotFound)?;
                 if claim.claimed {
-                    return Err(Error::FundsNotLocked);
+                    return Err(Error::BountyFundsNotLocked);
                 }
                 if env.ledger().timestamp() > claim.expires_at {
                     return Err(Error::DeadlineNotPassed);
@@ -952,7 +952,7 @@ impl BountyEscrowContract {
                     .get(&DataKey::Escrow(capability.bounty_id))
                     .ok_or(Error::BountyNotFound)?;
                 if escrow.status != EscrowStatus::Locked {
-                    return Err(Error::FundsNotLocked);
+                    return Err(Error::BountyFundsNotLocked);
                 }
                 if requested_amount > escrow.remaining_amount {
                     return Err(Error::CapabilityExceedsAuthority);
@@ -975,7 +975,7 @@ impl BountyEscrowContract {
                 if escrow.status != EscrowStatus::Locked
                     && escrow.status != EscrowStatus::PartiallyRefunded
                 {
-                    return Err(Error::FundsNotLocked);
+                    return Err(Error::BountyFundsNotLocked);
                 }
                 if requested_amount > escrow.remaining_amount {
                     return Err(Error::CapabilityExceedsAuthority);
@@ -1427,7 +1427,7 @@ impl BountyEscrowContract {
         capability_id: u64,
     ) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("release")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         if payout_amount <= 0 {
             return Err(Error::InvalidAmount);
@@ -1442,7 +1442,7 @@ impl BountyEscrowContract {
             .get(&DataKey::Escrow(bounty_id))
             .unwrap();
         if escrow.status != EscrowStatus::Locked {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
         if payout_amount > escrow.remaining_amount {
             return Err(Error::InsufficientFunds);
@@ -1631,7 +1631,7 @@ impl BountyEscrowContract {
         capability_id: u64,
     ) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("release")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         if !env
             .storage()
@@ -1652,7 +1652,7 @@ impl BountyEscrowContract {
             return Err(Error::DeadlineNotPassed);
         }
         if claim.claimed {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
 
         Self::consume_capability(
@@ -2001,7 +2001,7 @@ impl BountyEscrowContract {
         capability_id: u64,
     ) -> Result<(), Error> {
         if Self::check_paused(&env, symbol_short!("refund")) {
-            return Err(Error::FundsPaused);
+            return Err(Error::BountyFundsPaused);
         }
         if amount <= 0 {
             return Err(Error::InvalidAmount);
@@ -2018,7 +2018,7 @@ impl BountyEscrowContract {
 
         if escrow.status != EscrowStatus::Locked && escrow.status != EscrowStatus::PartiallyRefunded
         {
-            return Err(Error::FundsNotLocked);
+            return Err(Error::BountyFundsNotLocked);
         }
         if amount > escrow.remaining_amount {
             return Err(Error::InvalidAmount);
@@ -2035,7 +2035,7 @@ impl BountyEscrowContract {
                 .get(&DataKey::PendingClaim(bounty_id))
                 .unwrap();
             if !claim.claimed {
-                return Err(Error::ClaimPending);
+                return Err(Error::BountyClaimPending);
             }
         }
 

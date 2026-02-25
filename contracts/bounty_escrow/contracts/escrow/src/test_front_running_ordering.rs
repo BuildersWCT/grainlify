@@ -73,7 +73,7 @@ fn test_release_race_first_recipient_wins_order_ab() {
     setup.escrow.release_funds(&bounty_id, &recipient_a);
     let second_release = setup.escrow.try_release_funds(&bounty_id, &recipient_b);
 
-    assert_eq!(second_release, Err(Ok(Error::FundsNotLocked)));
+    assert_eq!(second_release, Err(Ok(Error::BountyFundsNotLocked)));
     assert_eq!(setup.token.balance(&recipient_a), amount);
     assert_eq!(setup.token.balance(&recipient_b), 0);
 
@@ -97,7 +97,7 @@ fn test_release_race_first_recipient_wins_order_ba() {
     setup.escrow.release_funds(&bounty_id, &recipient_b);
     let second_release = setup.escrow.try_release_funds(&bounty_id, &recipient_a);
 
-    assert_eq!(second_release, Err(Ok(Error::FundsNotLocked)));
+    assert_eq!(second_release, Err(Ok(Error::BountyFundsNotLocked)));
     assert_eq!(setup.token.balance(&recipient_b), amount);
     assert_eq!(setup.token.balance(&recipient_a), 0);
 
@@ -133,7 +133,7 @@ fn test_authorize_claim_race_last_authorization_wins() {
     assert_eq!(setup.token.balance(&setup.escrow.address), 0);
 
     let second_claim = setup.escrow.try_claim(&bounty_id);
-    assert_eq!(second_claim, Err(Ok(Error::FundsNotLocked)));
+    assert_eq!(second_claim, Err(Ok(Error::BountyFundsNotLocked)));
 }
 
 // Auto-refund race: multiple parties try to trigger refund after deadline
@@ -165,7 +165,7 @@ fn test_auto_refund_race_first_caller_wins() {
     setup.escrow.refund(&bounty_id);
     let second_refund = setup.escrow.try_refund(&bounty_id);
 
-    assert_eq!(second_refund, Err(Ok(Error::FundsNotLocked)));
+    assert_eq!(second_refund, Err(Ok(Error::BountyFundsNotLocked)));
     assert_eq!(setup.token.balance(&setup.depositor), 1_000_000);
     assert_eq!(setup.token.balance(&caller_a), 0);
     assert_eq!(setup.token.balance(&caller_b), 0);
@@ -236,7 +236,7 @@ fn test_batch_release_prevents_double_release() {
     assert_eq!(setup.token.balance(&recipient_b), 20_000);
 
     let second_batch = setup.escrow.try_batch_release_funds(&items);
-    assert_eq!(second_batch, Err(Ok(Error::FundsNotLocked)));
+    assert_eq!(second_batch, Err(Ok(Error::BountyFundsNotLocked)));
 
     assert_eq!(setup.token.balance(&recipient_a), 10_000);
     assert_eq!(setup.token.balance(&recipient_b), 20_000);
@@ -269,7 +269,7 @@ fn test_refund_vs_release_race_first_wins() {
     setup.escrow.refund(&bounty_id);
 
     let release_attempt = setup.escrow.try_release_funds(&bounty_id, &recipient);
-    assert_eq!(release_attempt, Err(Ok(Error::FundsNotLocked)));
+    assert_eq!(release_attempt, Err(Ok(Error::BountyFundsNotLocked)));
 
     assert_eq!(setup.token.balance(&setup.depositor), 1_000_000);
     assert_eq!(setup.token.balance(&recipient), 0);

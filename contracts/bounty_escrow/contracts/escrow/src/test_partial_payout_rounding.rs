@@ -293,7 +293,7 @@ fn test_varied_small_payouts_sum_to_full_amount() {
 
 /// After releasing all but 1, trying to release 2 must fail.
 #[test]
-#[should_panic(expected = "Error(Contract, #16)")] // InsufficientFunds
+#[should_panic(expected = "Error(Contract, #5)")] // InsufficientFunds
 fn test_overpay_by_one_after_partial_release() {
     let s = Setup::new();
     let amount = 50_i128;
@@ -307,9 +307,9 @@ fn test_overpay_by_one_after_partial_release() {
 }
 
 /// After fully releasing via partial_release (remaining == 0), any further
-/// partial_release must fail with FundsNotLocked.
+/// partial_release must fail with BountyFundsNotLocked.
 #[test]
-#[should_panic(expected = "Error(Contract, #5)")] // FundsNotLocked
+#[should_panic(expected = "Error(Contract, #202)")] // BountyFundsNotLocked
 fn test_partial_release_after_fully_drained() {
     let s = Setup::new();
     let amount = 10_i128;
@@ -324,7 +324,7 @@ fn test_partial_release_after_fully_drained() {
 
 /// Releasing a negative amount must be rejected.
 #[test]
-#[should_panic(expected = "Error(Contract, #13)")] // InvalidAmount
+#[should_panic(expected = "Error(Contract, #4)")] // InvalidAmount
 fn test_negative_partial_release_rejected() {
     let s = Setup::new();
     s.lock(11, 100_i128);
